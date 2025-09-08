@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auditorias</title>
+  <style>
+    #checklistDiv {
+      display: none;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Auditorias</h1>
+  
+  <button onclick="mostrarChecklist()">AU001</button>
+  
+  <div id="checklistDiv">
+      <iframe src="{{ url_for('checklist') }}" width="100%" height="900"></iframe>
+  </div>
+
+  <script>
+    function mostrarChecklist() {
+      const div = document.getElementById('checklistDiv');
+      if (div.style.display === 'none' || div.style.display === '') {
+        div.style.display = 'block';
+      } else {
+        div.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>
