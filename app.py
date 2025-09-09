@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for
+from flask import Flask, render_template, redirect, url_for, request
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -40,9 +40,14 @@ def dashboard():
 def NCs():
     return render_template('NCs.html')
 
-@app.route('/checklist')
+@app.route('/checklist', methods=['GET', 'POST'])
 def checklist():
-    return render_template('checklist.html', perguntas=perguntas)
+    if request.method == 'POST':
+        respostas = request.form
+        print(respostas)
+        return redirect(url_for("checklist"))
+    else:
+        return render_template('checklist.html', perguntas=perguntas)
 
 
 if __name__ == "__main__":

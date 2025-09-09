@@ -1,71 +1,77 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Checklist</title>
-    <style>
-      table {
-        border-collapse: collapse;
-        width: 100%;
-      }
-      th,
-      td {
-        border: 1px solid black;
-        padding: 6px;
-        text-align: left;
-      }
-      select,
-      input,
-      textarea {
-        width: 100%;
-        box-sizing: border-box;
-      }
-      textarea {
-        resize: vertical;
-      }
-    </style>
-  </head>
-  <body>
-    <table>
-      <thead>
-        <tr>
-          <th>Nº</th>
-          <th>Descrição</th>
-          <th>Resultado</th>
-          <th>Responsável</th>
-          <th>Observações</th>
-          <th>Classificação da NCF</th>
-          <th>Ação corretiva indicada</th>
-          <th>Situação da NC</th>
-        </tr>
-      </thead>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checklist</title>
+  <style>
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border: 1px solid black;
+      padding: 6px;
+      text-align: left;
+    }
+
+    select,
+    input,
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      resize: vertical;
+    }
+  </style>
+</head>
+
+<body>
+  <table>
+    <thead>
+      <tr>
+        <th>Nº</th>
+        <th>Descrição</th>
+        <th>Resultado</th>
+        <th>Responsável</th>
+        <th>Observações</th>
+        <th>Classificação da NCF</th>
+        <th>Ação corretiva indicada</th>
+        <th>Situação da NC</th>
+      </tr>
+    </thead>
+    <form action="#" method="post">
       <tbody>
         {% for pergunta in perguntas %}
         <tr>
           <td>{{ loop.index }}</td>
           <td>{{ pergunta }}</td>
           <td>
-            <select>
+            <select name="resultado[{{ loop.index }}]">
               <option value="">Selecione</option>
               <option value="sim">Sim</option>
               <option value="nao">Não</option>
               <option value="na">N/A</option>
             </select>
           </td>
-          <td><textarea type="text" placeholder="Responsável"></textarea></td>
-          <td><textarea placeholder="Observações"></textarea></td>
+          <td><textarea name="responsavel[{{ loop.index }}]" type="text" placeholder="Responsável"></textarea></td>
+          <td><textarea name="observacoes[{{ loop.index }}]" placeholder="Observações"></textarea></td>
           <td>
-            <select>
+            <select name="classificacao-nc[{{ loop.index }}]">
               <option value="">Selecione</option>
               <option value="urgente">Urgente</option>
               <option value="media">Média</option>
               <option value="leve">Leve</option>
             </select>
           </td>
-          <td><textarea type="text" placeholder="Ação corretiva"></textarea></td>
+          <td><textarea name="acao-corretiva[{{ loop.index }}]" type="text" placeholder="Ação corretiva"></textarea></td>
           <td>
-            <select>
+            <select name="situacao-nc[{{ loop.index }}]">
               <option value="">Selecione</option>
               <option value="aberto">Em aberto</option>
               <option value="andamento">Em andamento</option>
@@ -75,6 +81,9 @@
         </tr>
         {% endfor %}
       </tbody>
-    </table>
-  </body>
+      <button type="submit">Enviar</button>
+    </form>
+  </table>
+</body>
+
 </html>
