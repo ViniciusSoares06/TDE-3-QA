@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="../static/css/style.css">
   <title>Auditorias</title>
   <style>
     #checklistDiv {
@@ -12,6 +13,28 @@
   </style>
 </head>
 <body>
+  <header>
+    <div class="headerTitle">
+      <div class="HTitle">
+        <img src="../static/images/checklistIcon.png" alt="">
+        <h1>Sistema de Auditoria</h1>
+      </div>
+    </div>
+    <nav class="navBar">
+      <div class="navButton">
+        <img src="../static/images/dashboardIcon.png" alt="">
+        Dashboard
+      </div>
+      <div class="navButton">
+        <img src="../static/images/checklistIcon.png" alt="">
+        Auditorias
+      </div>
+      <div class="navButton">
+        <img src="../static/images/alertIcon.png" alt="">
+        Não Conformidades
+      </div>
+    </nav>
+  </header>
   <h1>Auditorias</h1>
   
   <button onclick="mostrarChecklist()">AU001</button>
