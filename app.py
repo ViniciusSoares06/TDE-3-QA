@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -26,12 +26,24 @@ perguntas = [
 
 @app.route("/")
 def home():
+    return redirect(url_for('auditorias'))
+
+@app.route('/auditorias')
+def auditorias():
     return render_template('auditorias.html')
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/NCs')
+def NCs():
+    return render_template('NCs.html')
 
 @app.route('/checklist')
 def checklist():
     return render_template('checklist.html', perguntas=perguntas)
+
 
 if __name__ == "__main__":
     with app.app_context():
