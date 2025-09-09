@@ -3,6 +3,7 @@ body {
     padding: 0;
     background-color: #f4f4f4;
     font-family: arial, sans-serif;
+    overflow-x: hidden;
 }
 
 header {
