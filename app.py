@@ -8,11 +8,13 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+from models.RespostaChecklist import RespostaChecklist
+from database import db
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
-db = SQLAlchemy(app)
+db.init_app(app)
 
 
 perguntas = [
@@ -150,10 +152,30 @@ def NCs():
 @app.route('/checklist', methods=['GET', 'POST'])
 def checklist():
     if request.method == 'POST':
-        respostas = request.form 
+        respostas = request.form
+        for idx, pergunta in enumerate(perguntas):
+            resultado = respostas.get(f"resultado[{idx}]", "")
+            responsavel = respostas.get(f"responsavel[{idx}]", "")
+            classificacao_nc = respostas.get(f"classificacao-nc[{idx}]", "")
+            acao_corretiva = respostas.get(f"acao-corretiva[{idx}]", "")
+            observacoes = respostas.get(f"observacoes[{idx}]", "")
+            resposta = RespostaChecklist(
+                checklist_name=respostas.get('checklist-name', ''),
+                pergunta=pergunta,
+                resultado=resultado,
+                responsavel=responsavel,
+                classificacao_nc=classificacao_nc,
+                acao_corretiva=acao_corretiva,
+                observacoes=observacoes,
+                data=datetime.now()
+            )
+            db.session.add(resposta)
+        db.session.commit()
         
         dados = {}
         for key, value in respostas.items():
+            if "[" not in key:
+                continue
             nome, idx = key.split("[")
             idx = idx.strip("]")
 

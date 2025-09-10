@@ -43,11 +43,31 @@
       background-color: #1b3a8a;
       transition: all 0.3s ease;
     }
+
+    .checklist-form__field {
+      margin-bottom: 16px;
+    }
+
+    .checklist-form__label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .checklist-form__input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 
 <body>
   <form action="#" method="post">
+    <div class="checklist-form__field">
+      <label class="checklist-form__label" for="checklist-name">Nome do Checklist</label>
+      <input class="checklist-form__input" id="checklist-name" type="text" name="checklist-name" required>
+    </div>
     <table>
       <thead>
         <tr>
