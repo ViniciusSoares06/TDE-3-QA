@@ -28,24 +28,39 @@
     textarea {
       resize: vertical;
     }
+
+    button {
+      margin-top: 16px;
+      padding: 8px 16px;
+      background-color: #2657caff;
+      border-radius: 4px;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1b3a8a;
+      transition: all 0.3s ease;
+    }
   </style>
 </head>
 
 <body>
-  <table>
-    <thead>
-      <tr>
-        <th>Nº</th>
-        <th>Descrição</th>
-        <th>Resultado</th>
-        <th>Responsável</th>
-        <th>Observações</th>
-        <th>Classificação da NCF</th>
-        <th>Ação corretiva indicada</th>
-        <th>Situação da NC</th>
-      </tr>
-    </thead>
-    <form action="#" method="post">
+  <form action="#" method="post">
+    <table>
+      <thead>
+        <tr>
+          <th>Nº</th>
+          <th>Descrição</th>
+          <th>Resultado</th>
+          <th>Responsável</th>
+          <th>Observações</th>
+          <th>Classificação da NCF</th>
+          <th>Ação corretiva indicada</th>
+          <th>Situação da NC</th>
+        </tr>
+      </thead>
       <tbody>
         {% for pergunta in perguntas %}
         <tr>
@@ -69,7 +84,8 @@
               <option value="leve">Leve</option>
             </select>
           </td>
-          <td><textarea name="acao-corretiva[{{ loop.index }}]" type="text" placeholder="Ação corretiva"></textarea></td>
+          <td><textarea name="acao-corretiva[{{ loop.index }}]" type="text" placeholder="Ação corretiva"></textarea>
+          </td>
           <td>
             <select name="situacao-nc[{{ loop.index }}]">
               <option value="">Selecione</option>
@@ -81,9 +97,9 @@
         </tr>
         {% endfor %}
       </tbody>
-      <button type="submit">Enviar</button>
-    </form>
-  </table>
+    </table>
+    <button type="submit">Enviar</button>
+  </form>
 </body>
 
 </html>
