@@ -25,9 +25,7 @@
 
     {% include 'components/header.html' %}
 
-    <h1>Auditorias</h1>
-
-    <button onclick="mostrarChecklist()">AU001</button>
+    
 
     <div id="checklistDiv">
       <iframe
@@ -36,6 +34,134 @@
         height="900"
       ></iframe>
     </div>
+
+    <!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Auditorias</title>
+    <link rel="stylesheet" href="style.css">
+    <link></head><link rel="stylesheet" href="../static/css/auditorias.css">
+</head>
+<body>
+    <div class="container">
+        <div id="list-view" class="view active">
+            <div class="header">
+                <h2>Auditorias</h2>
+                <button class="btn btn-primary" onclick="mostrarChecklist('new-audit-form')">Nova Auditoria
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="card">
+                <div class="filters">
+                    <input type="text" placeholder="Buscar..." class="search-input">
+                    <select class="status-filter">
+                        <option value="concluida">Concluída</option>
+                        <option value="andamento">Em Andamento</option>
+                    </select>
+                </div>
+
+                <div class="audit-list">
+                    <div class="audit-item">
+                        <div class="audit-header">
+                            <div class="audit-info">
+                                <div class="audit-badges">
+                                    <span class="badge badge-success">Concluída</span>
+                                    <span class="audit-id">AUD-2025-001</span>
+                                </div>
+                                <div class="audit-details">
+                                    <span>Setor:</span>
+                                    <span>Data:</span>
+                                    <span>Auditor:</span>
+                                </div>
+                            </div>
+                            <div class="audit-actions">
+                                <a href="#" class="btn btn-outline" onclick="showView('checklist-view')">
+                                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.77 3.77z"/>
+                                    </svg>
+                                    Ver Detalhes
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+            </div>
+        </div>
+
+        <div id="new-audit-form" class="view">
+            <div class="header">
+                <h2>Nova Auditoria</h2>
+                <button class="btn btn-outline" onclick="showView('list-view')">Voltar</button>
+            </div>
+            <div class="card">
+                <form id="audit-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="setor">Setor</label>
+                            <select id="setor" class="form-input">
+                                <option value="">Selecione o setor</option>
+                                <option value="producao">Produção</option>
+                                <option value="qualidade">Qualidade</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="auditor">Auditor Responsável</label>
+                            <input type="text" id="auditor" class="form-input" value="" readonly>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="observacoes">Observações</label>
+                            <textarea id="observacoes" class="form-input" rows="4"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-outline" onclick="showView('list-view')">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Iniciar Checklist</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div id="checklist-view" class="view">
+            <div class="header">
+                <h2>Checklist de Auditoria</h2>
+                <button class="btn btn-outline" onclick="showView('list-view')">Voltar</button>
+            </div>
+            <div class="card">
+                <div class="checklist-item">
+                    <p class="checklist-question"></p>
+                    <div class="radio-group">
+                        <label class="radio-option">
+                            <input type="radio" name="question1" value="conformidade" checked>
+                            <span class="radio-label success">Conforme</span>
+                        </label>
+                        <label class="radio-option">
+                            <input type="radio" name="question1" value="nao-conformidade">
+                            <span class="radio-label destructive">Não Conforme</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-primary">Finalizar Auditoria</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Função para mostrar a vista (tela) correta
+        function showView(viewId) {
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            document.getElementById(viewId).classList.add('active');
+        }
+    </script>
+</body>
+</html>
 
     <script>
       function mostrarChecklist() {
