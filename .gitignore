@@ -11,3 +11,9 @@ __pycache__/
 # Configurações de editor
 .vscode/
 .idea/
+
+# Database
+*.db
+
+# PDFs Gerados
+*.pdf
