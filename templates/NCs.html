@@ -1,149 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <style>
-    #checklistDiv {
-      display: none;
-      margin-top: 20px;
-    }
-
-    #NCsButton {
-      border-bottom: 4px solid #2657caff;
-      color: #2657caff;
-    }
-
-    #NCsButton img {
-      filter: brightness(0) saturate(100%) invert(34%) sepia(83%) saturate(749%)
-        hue-rotate(203deg) brightness(91%) contrast(101%);
-    }
-  </style>
-  <!DOCTYPE html>
-  <html lang="pt-BR">
+<html lang="pt-BR">
   <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Não Conformidades - Sistema de Auditoria</title>
       <link rel="stylesheet" href="../static/css/NCs.css">
+      <style>
+        #checklistDiv {
+          display: none;
+          margin-top: 20px;
+        }
+
+        #NCsButton {
+          border-bottom: 4px solid #2657caff;
+          color: #2657caff;
+        }
+
+        #NCsButton img {
+          filter: brightness(0) saturate(100%) invert(34%) sepia(83%) saturate(749%)
+            hue-rotate(203deg) brightness(91%) contrast(101%);
+        }
+      </style>
   </head>
   <body>
 
     {% include 'components/header.html' %}
 
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h2 class="title">Não Conformidades</h2>
+            <div class="header-actions">
+                <div class="escalated-legend">
+                    <div class="escalated-dot"></div>
+                    <span>Escalonadas</span>
+                </div>
+                <button class="btn btn-primary">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                        <path d="M12 9v4"/>
+                        <path d="m12 17 .01 0"/>
+                    </svg>
+                    Nova Auditoria
+                </button>
+            </div>
+        </div>
 
-      <div class="container">
-          <!-- Header -->
-          <div class="header">
-              <h2 class="title">Não Conformidades</h2>
-              <div class="header-actions">
-                  <div class="escalated-legend">
-                      <div class="escalated-dot"></div>
-                      <span>Escalonadas</span>
-                  </div>
-                  <button class="btn btn-primary">
-                      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
-                          <path d="M12 9v4"/>
-                          <path d="m12 17 .01 0"/>
-                      </svg>
-                      Nova Auditoria
-                  </button>
-              </div>
-          </div>
+        <!-- Filters Card -->
+        <div class="card filters-card">
+            <div class="filters-container">
+                <div class="search-container">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input type="text" placeholder="Buscar não conformidades..." class="search-input">
+                </div>
+                <select class="status-filter">
+                    <option value="todas">Todas</option>
+                    <option value="Aberta">Aberta</option>
+                    <option value="Em Andamento">Em Andamento</option>
+                    <option value="Resolvida">Resolvida</option>
+                </select>
+            </div>
+        </div>
 
-          <!-- Filters Card -->
-          <div class="card filters-card">
-              <div class="filters-container">
-                  <div class="search-container">
-                      <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                          <circle cx="11" cy="11" r="8"/>
-                          <path d="m21 21-4.35-4.35"/>
-                      </svg>
-                      <input type="text" placeholder="Buscar não conformidades..." class="search-input">
-                  </div>
-                  <select class="status-filter">
-                      <option value="todas">Todas</option>
-                      <option value="Aberta">Aberta</option>
-                      <option value="Em Andamento">Em Andamento</option>
-                      <option value="Resolvida">Resolvida</option>
-                  </select>
-              </div>
-          </div>
+        <!-- Non-Conformities List -->
+        <div class="nc-list">
+        {% for nc in NCs %}
+            {% set ncInfo = nc_dict.get(nc.id) %}
+            <div class="nc-item">
+                <div class="nc-content">
+                    <div class="nc-header">
+                        <span class="nc-id">NC-{{ nc.pergunta_id }}</span>
+                        {% set classificacao = ncInfo.classificacao if ncInfo else 'leve' %}
+                        <span class="badge badge-{{ classificacao|lower }}">{{ classificacao|capitalize }}</span>
+                        <span>
+                        {{ nc.pergunta.descricao }}
+                        </span>
+                    </div>
+                    
+                    <p class="nc-description">{{ nc.observacoes or "Sem observações" }}</p>
+                    
+                    <div class="nc-metadata">
+                        <div class="metadata-item">
+                            <span>Auditoria: {{ nc.auditoria_checklist.nome }}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span>Auditor: {{ nc.auditoria_checklist.auditor.nome }}</span>
+                        </div>
+                        <div class="metadata-item">
+                            <span>{{ nc.auditoria_checklist.data_auditoria.strftime("%d/%m/%Y") }}</span>
+                        </div>
+                    </div>
+                </div>
 
-          <!-- Non-Conformities List -->
-          <div class="nc-list">
-              <!-- NC Item 1 - Escalated -->
-              <div class="nc-item escalated">
-                  <div class="nc-content">
-                      <div class="nc-header">
-                          <span class="nc-id escalated-text">NC-001</span>
-                          <span class="badge badge-open">Aberta</span>
-                          <span class="badge badge-priority-high">Alta</span>
-                          <span class="badge badge-escalated">ESCALADA</span>
-                      </div>
-                      
-                      <p class="nc-description">Falta de calibração em equipamento de medição</p>
-                      
-                      <div class="nc-metadata">
-                          <div class="metadata-item">
-                              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                  <path d="M3 21h18"/>
-                                  <path d="M5 21V7l8-4v18"/>
-                                  <path d="M19 21V11l-6-4"/>
-                              </svg>
-                              <span>Produção - Linha A</span>
-                          </div>
-                          <div class="metadata-item">
-                              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                                  <circle cx="12" cy="7" r="4"/>
-                              </svg>
-                              <span>Carlos Oliveira</span>
-                          </div>
-                          <div class="metadata-item">
-                              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
-                                  <line x1="16" x2="16" y1="2" y2="6"/>
-                                  <line x1="8" x2="8" y1="2" y2="6"/>
-                                  <line x1="3" x2="21" y1="10" y2="10"/>
-                              </svg>
-                              <span>Aberta em 15/01/2024</span>
-                          </div>
-                          <div class="metadata-item">
-                              <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                                  <circle cx="12" cy="12" r="10"/>
-                                  <polyline points="12,6 12,12 16,14"/>
-                              </svg>
-                              <span class="escalated-text">8 dias aberta</span>
-                          </div>
-                      </div>
-                  </div>
+                <div class="nc-actions">
+                    <select class="status-select">
+                        <option value="Aberta" {% if ncInfo and ncInfo.situacao == "em_aberto" %}selected{% endif %}>Aberta</option>
+                        <option value="Em Andamento" {% if ncInfo and ncInfo.situacao == "em_andamento" %}selected{% endif %}>Em Andamento</option>
+                        <option value="Resolvida" {% if ncInfo and ncInfo.situacao == "encerrada" %}selected{% endif %}>Resolvida</option>
+                    </select>
+                </div>
+            </div>
+        {% else %}
+            <p>Nenhuma não conformidade encontrada.</p>
+        {% endfor %}
 
-                  <div class="nc-actions">
-                      <select class="status-select">
-                          <option value="Aberta" selected>Aberta</option>
-                          <option value="Em Andamento">Em Andamento</option>
-                          <option value="Resolvida">Resolvida</option>
-                      </select>
-                      <button class="btn btn-outline">
-                          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                              <path d="m18 5-3-3H9l-3 3"/>
-                              <path d="M2 12h20"/>
-                              <path d="M10 17V7"/>
-                              <path d="M14 17V7"/>
-                          </svg>
-                          Editar
-                      </button>
-                  </div>
-              </div>
-
-              <!-- NC Item 2 -->
-              
-              </div>
-          </div>
-      </div>
+        </div>
+    </div>
   </body>
 </html>

@@ -1,107 +1,121 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checklist</title>
+    <style>
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Checklist</title>
-  <style>
-    table {
-      border-collapse: collapse;
-      width: 100%;
-    }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 6px;
+        text-align: left;
+      }
 
-    th,
-    td {
-      border: 1px solid black;
-      padding: 6px;
-      text-align: left;
-    }
+      select,
+      input,
+      textarea {
+        width: 100%;
+        box-sizing: border-box;
+      }
 
-    select,
-    input,
-    textarea {
-      width: 100%;
-      box-sizing: border-box;
-    }
+      textarea {
+        resize: vertical;
+      }
 
-    textarea {
-      resize: vertical;
-    }
+      button {
+        margin-top: 16px;
+        padding: 8px 16px;
+        background-color: #2657caff;
+        border-radius: 4px;
+        color: white;
+        border: none;
+        cursor: pointer;
+      }
 
-    button {
-      margin-top: 16px;
-      padding: 8px 16px;
-      background-color: #2657caff;
-      border-radius: 4px;
-      color: white;
-      border: none;
-      cursor: pointer;
-    }
+      button:hover {
+        background-color: #1b3a8a;
+        transition: all 0.3s ease;
+      }
+    </style>
+  </head>
 
-    button:hover {
-      background-color: #1b3a8a;
-      transition: all 0.3s ease;
-    }
-  </style>
-</head>
-
-<body>
-  <form action="#" method="post">
-    <h3>{{ checklist.nome }}</h3>
-    <input type="hidden" name="checklist-id" value="{{ checklist.id }}">
-    <table>
-      <thead>
-        <tr>
-          <th>Nº</th>
-          <th>Descrição</th>
-          <th>Resultado</th>
-          <th>Responsável</th>
-          <th>Observações</th>
-          <th>Classificação da NCF</th>
-          <th>Ação corretiva indicada</th>
-          <th>Situação da NC</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for pergunta in perguntas %}
-        <tr>
-          <td>{{ loop.index }}</td>
-          <td>{{ pergunta.descricao }}</td>
-          <td>
-            <select name="resultado[{{ pergunta.id }}]">
-              <option value="">Selecione</option>
-              <option value="CONFORME">Sim</option>
-              <option value="NAO_CONFORME">Não</option>
-              <option value="NAO_APLICAVEL">N/A</option>
-            </select>
-          </td>
-          <td><input name="responsavel[{{ pergunta.id }}]" type="email" placeholder="Responsável"></td>
-          <td><textarea name="observacoes[{{ pergunta.id }}]" placeholder="Observações"></textarea></td>
-          <td>
-            <select name="classificacao-nc[{{ pergunta.id }}]">
-              <option value="">Selecione</option>
-              <option value="urgente">Urgente</option>
-              <option value="media">Média</option>
-              <option value="leve">Leve</option>
-            </select>
-          </td>
-          <td><textarea name="acao-corretiva[{{ pergunta.id }}]" type="text" placeholder="Ação corretiva"></textarea>
-          </td>
-          <td>
-            <select name="situacao-nc[{{ pergunta.id }}]">
-              <option value="">Selecione</option>
-              <option value="aberto">Em aberto</option>
-              <option value="andamento">Em andamento</option>
-              <option value="encerrada">Encerrada</option>
-            </select>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <button type="submit">Enviar</button>
-  </form>
-</body>
-
+  <body>
+    <form action="#" method="post">
+      <h3>{{ checklist.nome }}</h3>
+      <input type="hidden" name="checklist-id" value="{{ checklist.id }}" />
+      <table>
+        <thead>
+          <tr>
+            <th>Nº</th>
+            <th>Descrição</th>
+            <th>Resultado</th>
+            <th>Responsável</th>
+            <th>Observações</th>
+            <th>Classificação da NCF</th>
+            <th>Ação corretiva indicada</th>
+            <th>Situação da NC</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pergunta in perguntas %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ pergunta.descricao }}</td>
+            <td>
+              <select name="resultado[{{ pergunta.id }}]">
+                <option value="">Selecione</option>
+                <option value="CONFORME">Sim</option>
+                <option value="NAO_CONFORME">Não</option>
+                <option value="NAO_APLICAVEL">N/A</option>
+              </select>
+            </td>
+            <td>
+              <input
+                name="responsavel[{{ pergunta.id }}]"
+                type="email"
+                placeholder="Responsável"
+              />
+            </td>
+            <td>
+              <textarea
+                name="observacoes[{{ pergunta.id }}]"
+                placeholder="Observações"
+              ></textarea>
+            </td>
+            <td>
+              <select name="classificacao-nc[{{ pergunta.id }}]">
+                <option value="">Selecione</option>
+                <option value="urgente">Urgente</option>
+                <option value="media">Média</option>
+                <option value="leve">Leve</option>
+              </select>
+            </td>
+            <td>
+              <textarea
+                name="acao-corretiva[{{ pergunta.id }}]"
+                type="text"
+                placeholder="Ação corretiva"
+              ></textarea>
+            </td>
+            <td>
+              <select name="situacao-nc[{{ pergunta.id }}]">
+                <option value="">Selecione</option>
+                <option value="em_aberto">Em aberto</option>
+                <option value="em_andamento">Em andamento</option>
+                <option value="encerrada">Encerrada</option>
+              </select>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      <button type="submit">Enviar</button>
+    </form>
+  </body>
 </html>

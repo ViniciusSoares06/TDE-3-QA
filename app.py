@@ -14,6 +14,7 @@ from models.TemplateChecklist import TemplateChecklist
 from models.AuditoriaPergunta import AuditoriaPergunta
 from models.AuditoriaChecklist import AuditoriaChecklist
 from models.Usuario import Usuario
+from models.NaoConformidade import NaoConformidade, SituacaoEnum, ClassificacaoEnum
 
 
 app = Flask(__name__)
@@ -72,9 +73,16 @@ def gerar_pdf_nc(nc, indice):
 
     # Dados fixos
     data_solicitacao = datetime.now().date()
-    classificacao = nc.get("classificacao-nc", "").lower()
+    
+    # Acessando atributos do objeto NaoConformidade
+    classificacao = nc.classificacao if nc.classificacao else "leve"
     dias_prazo = {"urgente": 1, "media": 2, "leve": 3}.get(classificacao, 3)
     prazo_resolucao = adicionar_dias_uteis(data_solicitacao, dias_prazo)
+    
+    responsavel_nome = nc.responsavel.nome if nc.responsavel else ""
+    acao_corretiva = nc.acao_corretiva or ""
+    observacoes = getattr(nc.auditoria_pergunta, "observacoes", "") or ""
+    situacao = nc.situacao if nc.situacao else "em_aberto"
 
     # Cabeçalho
     c.setFont("Helvetica-Bold", 14)
@@ -83,7 +91,7 @@ def gerar_pdf_nc(nc, indice):
     c.setFont("Helvetica", 10)
     c.drawString(50, altura - 100, f"Código de Controle: NC-{indice:03d}")
     c.drawString(300, altura - 100, f"Projeto: Exemplo")
-    c.drawString(50, altura - 120, f"Responsável: {nc.get('responsavel', '')}")
+    c.drawString(50, altura - 120, f"Responsável: {responsavel_nome}")
 
     # Datas e prazos
     c.drawString(50, altura - 160, f"Data da 1ª Solicitação: {data_solicitacao.strftime('%d/%m/%Y')}")
@@ -97,17 +105,15 @@ def gerar_pdf_nc(nc, indice):
     c.drawString(50, altura - 230, "Você tem 24 horas úteis para contestação")
 
     c.setFont("Helvetica", 10)
-    c.drawString(50, altura - 260, f"Descrição: {nc.get('observacoes', '')}")
-    c.drawString(50, altura - 280, f"Classificação: {nc.get('classificacao-nc', '')}")
-    c.drawString(50, altura - 300, f"Ação Corretiva indicada: {nc.get('acao-corretiva', '')}")
+    c.drawString(50, altura - 260, f"Descrição: {observacoes}")
+    c.drawString(50, altura - 280, f"Classificação: {classificacao}")
+    c.drawString(50, altura - 300, f"Ação Corretiva indicada: {acao_corretiva}")
+    c.drawString(50, altura - 320, f"Situação: {situacao}")
 
     # Escalonamento
-    c.drawString(50, altura - 340, "Histórico de Escalonamento: 1")
-    c.drawString(300, altura - 340, "Superior Responsável: Kelly")
-    c.drawString(50, altura - 360, f"Prazo para Resolução: {prazo_resolucao.strftime('%d/%m/%Y')}")
-
-    # Observações
-    c.drawString(50, altura - 400, f"Observações: {nc.get('observacoes', '')}")
+    c.drawString(50, altura - 360, "Histórico de Escalonamento: 1")
+    c.drawString(300, altura - 360, "Superior Responsável: Kelly")
+    c.drawString(50, altura - 380, f"Prazo para Resolução: {prazo_resolucao.strftime('%d/%m/%Y')}")
 
     # Rodapé
     c.setFont("Helvetica-Oblique", 8)
@@ -115,6 +121,7 @@ def gerar_pdf_nc(nc, indice):
 
     c.save()
     return arquivo
+
 
 
 def enviar_email_nc(destinatario, assunto, corpo, arquivo_pdf):
@@ -170,78 +177,79 @@ def dashboard():
 
 @app.route('/NCs')
 def NCs():
-    return render_template('NCs.html')
+    NCsInfos = NaoConformidade.query.all()
+    
+    nc_dict = {nc.auditoria_pergunta_id: nc for nc in NCsInfos}
+
+    NCs = AuditoriaPergunta.query.filter_by(resultado="NAO_CONFORME").all()
+
+    return render_template('NCs.html', NCs=NCs, nc_dict=nc_dict)
+
 
 
 @app.route('/checklist', methods=['GET', 'POST'])
 def checklist():
     if request.method == 'POST':
         respostas = request.form
-        checklistId = respostas.get(f"checklist-id", "")
+        checklistId = respostas.get("checklist-id")
         checklist = TemplateChecklist.query.get(checklistId)
         auditoria_checklist = AuditoriaChecklist(
             nome=checklist.nome,
             data_auditoria=datetime.now(),
-            aderencia=None,
             template_checklist_id=checklist.id,
             auditor_id=1
         )
         db.session.add(auditoria_checklist)
         db.session.commit()
+
         perguntas = TemplatePergunta.query.all()
         for pergunta in perguntas:
             perguntaId = pergunta.id
-            resultado = respostas.get(f"resultado[{perguntaId}]", "") or None
-            responsavel = respostas.get(f"responsavel[{perguntaId}]", "")
-            classificacao_nc = respostas.get(f"classificacao-nc[{perguntaId}]", "")
-            acao_corretiva = respostas.get(f"acao-corretiva[{perguntaId}]", "")
-            observacoes = respostas.get(f"observacoes[{perguntaId}]", "")
-            resposta = AuditoriaPergunta(
+            resultado = respostas.get(f"resultado[{perguntaId}]")
+            responsavel_email = respostas.get(f"responsavel[{perguntaId}]")
+            classificacao_nc = respostas.get(f"classificacao-nc[{perguntaId}]") or "leve"
+            acao_corretiva = respostas.get(f"acao-corretiva[{perguntaId}]")
+            situacao_nc = respostas.get(f"situacao-nc[{perguntaId}]") or "em_aberto"
+            observacoes = respostas.get(f"observacoes[{perguntaId}]")
+
+
+            auditoria_resposta = AuditoriaPergunta(
                 resultado=resultado,
-                observacoes=observacoes,
                 auditoria_checklist_id=auditoria_checklist.id,
-                pergunta_id=perguntaId
+                pergunta_id=perguntaId,
+                observacoes=observacoes
             )
-            db.session.add(resposta)
-        db.session.commit()
-        
-        dados = {}
-        for key, value in respostas.items():
-            if "[" not in key:
-                continue
-            nome, idx = key.split("[")
-            idx = idx.strip("]")
+            db.session.add(auditoria_resposta)
+            db.session.commit()
 
-            if idx not in dados:
-                dados[idx] = {}
-            dados[idx][nome] = value
+            if resultado == "NAO_CONFORME" and responsavel_email:
+                responsavel = Usuario.query.filter_by(email=responsavel_email).first()
+                if not responsavel:
+                    responsavel = Usuario(nome=responsavel_email.split("@")[0], email=responsavel_email)
+                    db.session.add(responsavel)
+                    db.session.commit()
 
-        nao_conformes = {
-            i: item
-            for i, item in dados.items()
-            if item.get("resultado", "") == "NAO_CONFORME"
-        }
+                nc = NaoConformidade(
+                    classificacao=classificacao_nc,
+                    acao_corretiva=acao_corretiva,
+                    situacao=situacao_nc,
+                    responsavel=responsavel,
+                    auditoria_pergunta=auditoria_resposta
+                )
 
-        for i, nc in nao_conformes.items():
-            arquivo_pdf = gerar_pdf_nc(nc, int(i))
-            destinatario = nc.get("responsavel", "").strip()
+                db.session.add(nc)
+                db.session.commit()
 
-            if destinatario:
+                arquivo_pdf = gerar_pdf_nc(nc, nc.id)
                 enviar_email_nc(
-                    destinatario,
-                    assunto=f"Não Conformidade NC-{int(i):03d}",
-                    corpo=(
-                        f"Olá,\n\n"
-                        f"Segue em anexo o relatório da Não Conformidade NC-{int(i):03d}.\n"
-                        f"Por favor, verifique e tome as ações necessárias.\n\n"
-                        f"Atenciosamente,\nEquipe de Qualidade"
-                    ),
+                    responsavel.email,
+                    assunto=f"Não Conformidade NC-{nc.id:03d}",
+                    corpo=f"Segue anexo o relatório da NC-{nc.id:03d}.",
                     arquivo_pdf=arquivo_pdf
                 )
 
-        print("PDFs gerados e emails enviados para os responsáveis!")
-
         return redirect(url_for("checklist"))
+
     else:
         perguntas = TemplatePergunta.query.all()
         checklist = TemplateChecklist.query.filter_by(nome="Padrão").first()

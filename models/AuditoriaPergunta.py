@@ -1,7 +1,7 @@
 from database import db
 from sqlalchemy import Enum
 
-ResultadoEnum = Enum('CONFORME', 'NAO_CONFORME', 'NAO_APLICAVEL', name='situacao_enum')
+ResultadoEnum = Enum('CONFORME', 'NAO_CONFORME', 'NAO_APLICAVEL', '', name='resultado_enum')
 
 class AuditoriaPergunta(db.Model):
     id = db.Column(db.Integer, primary_key=True)
