@@ -19,14 +19,7 @@
         </div>
 
         <div class="cartao">
-          <div class="filtros">
-            <input type="text" placeholder="Buscar..." class="campo-busca" />
-            <select class="filtro-status">
-              <option value="concluida">Concluída</option>
-              <option value="andamento">Em Andamento</option>
-            </select>
-          </div>
-
+          
           <div class="lista-itens">
             <div class="item-auditoria">
               <div class="cabecalho-auditoria">
@@ -36,9 +29,18 @@
                     <span class="id-auditoria">#12345</span>
                   </div>
                   <div class="detalhes-auditoria">
-                    <span>Setor: Produção</span>
-                    <span>Data: 11/09/2025</span>
-                    <span>Auditor: João da Silva</span>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data</th>                
+                    </tr>
+
+                    {% for r in respostas %}
+                    
+                    <tr>
+                        <td>{{ r.id }}</td>
+                        <td>{{ r.auditoria_checklist.data }}</td>
+                    </tr>
+                    {% endfor %}
                   </div>
                 </div>
                 <div class="acoes-auditoria">
@@ -62,12 +64,47 @@
             <iframe
               src="{{ url_for('checklist') }}"
               width="100%"
-              height="900"
+              height="1000"
               frameborder="0">
             </iframe>
           </div>
         </div>
       </div>
+    
+        <div id="detalhes-auditoria" class="tela">
+            <div class="cabecalho">
+            <h2>Detalhes da Auditoria</h2>
+            <button class="botao botao-contorno" onclick="mostrarTela('lista-auditorias')">Voltar</button>
+            </div>
+            <div class="cartao">
+            <div class="tabela-detalhes">
+                <table class="tabela">
+                <thead>
+                    <tr>
+                    <th>ID</th>
+                    <th>Checklist</th>
+                    <th>Pergunta</th>
+                    <th>Resultado</th>
+                    <th>Observações</th>
+                    <th>Data</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in respostas %}
+                    <tr>
+                    <td>{{ r.id }}</td>
+                    <td>{{ r.auditoria_checklist.nome }}</td>
+                    <td>{{ r.pergunta.descricao }}</td>
+                    <td>{{ r.resultado }}</td>
+                    <td>{{ r.observacoes }}</td>
+                    <td>{{ r.auditoria_checklist.data }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                </table>
+            </div>
+            </div>
+        </div>
 
       <div id="checklist-auditoria" class="tela">
         <div class="cabecalho">
@@ -75,23 +112,27 @@
           <button class="botao botao-contorno" onclick="mostrarTela('lista-auditorias')">Voltar</button>
         </div>
         <div class="cartao">
-          <div class="item-checklist">
-            <p class="pergunta-checklist">A documentação do processo está atualizada?</p>
-            <div class="grupo-radio">
-              <label class="opcao-radio">
-                <input type="radio" name="pergunta1" value="conformidade" checked />
-                <span class="etiqueta-radio sucesso">Conforme</span>
-              </label>
-              <label class="opcao-radio">
-                <input type="radio" name="pergunta1" value="nao-conformidade" />
-                <span class="etiqueta-radio perigo">Não Conforme</span>
-              </label>
-            </div>
-          </div>
-          <div class="acoes-formulario">
-            <button class="botao botao-primario">Finalizar Auditoria</button>
-          </div>
-        </div>
+          <table border="1" cellpadding="5">
+        <tr>
+            <th>ID</th>
+            <th>Checklist</th>
+            <th>Pergunta</th>
+            <th>Resultado</th>
+            <th>Observações</th>
+            <th>Data</th>
+        </tr>
+
+        {% for r in respostas %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.auditoria_checklist.nome }}</td>
+            <td>{{ r.pergunta.descricao }}</td>
+            <td>{{ r.resultado }}</td>
+            <td>{{ r.observacoes }}</td>
+            <td>{{ r.auditoria_checklist.data }}</td>
+        </tr>
+        {% endfor %}
+    </table>
       </div>
     </div>
 
