@@ -8,8 +8,12 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
-from models.RespostaChecklist import RespostaChecklist
 from database import db
+from models.TemplatePergunta import TemplatePergunta
+from models.TemplateChecklist import TemplateChecklist
+from models.AuditoriaPergunta import AuditoriaPergunta
+from models.AuditoriaChecklist import AuditoriaChecklist
+from models.Usuario import Usuario
 
 
 app = Flask(__name__)
@@ -17,7 +21,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db.init_app(app)
 
 
-perguntas = [
+PERGUNTAS = [
     "O Plano de Projeto foi criado?",
     "O Repositório do projeto foi criado corretamente?",
     "O Plano de Gerência de Configuração foi elaborado?",
@@ -35,6 +39,21 @@ perguntas = [
     "As medidas de qualidade foram coletadas e analisadas?"
 ]
 
+def inicializar_perguntas():
+    checklist = TemplateChecklist.query.filter_by(nome="Padrão").first()
+    if not checklist:
+        checklist = TemplateChecklist(nome="Padrão")
+        db.session.add(checklist)
+        db.session.commit()
+    for pergunta in PERGUNTAS:
+        existe = TemplatePergunta.query.filter_by(descricao=pergunta).first()
+        if not existe:
+            nova_pergunta = TemplatePergunta(
+                descricao=pergunta,
+                template_checklist=checklist
+            )
+            db.session.add(nova_pergunta)
+    db.session.commit()
 
 def adicionar_dias_uteis(data_inicio, dias):
     dias_adicionados = 0
@@ -131,17 +150,22 @@ def enviar_email_nc(destinatario, assunto, corpo, arquivo_pdf):
 
 @app.route("/")
 def home():
+    inicializar_perguntas()
     return redirect(url_for('auditorias'))
 
 
 @app.route('/auditorias')
 def auditorias():
+    inicializar_perguntas()
     return render_template('auditorias.html')
 
 
 @app.route('/dashboard')
 def dashboard():
-    return render_template('dashboard.html')
+    respostas = AuditoriaPergunta.query.all()
+    for pergunta in respostas:
+        print(pergunta.auditoria_checklist)
+    return render_template('dashboard.html', respostas=respostas)
 
 
 @app.route('/NCs')
@@ -153,21 +177,30 @@ def NCs():
 def checklist():
     if request.method == 'POST':
         respostas = request.form
-        for idx, pergunta in enumerate(perguntas):
-            resultado = respostas.get(f"resultado[{idx}]", "")
-            responsavel = respostas.get(f"responsavel[{idx}]", "")
-            classificacao_nc = respostas.get(f"classificacao-nc[{idx}]", "")
-            acao_corretiva = respostas.get(f"acao-corretiva[{idx}]", "")
-            observacoes = respostas.get(f"observacoes[{idx}]", "")
-            resposta = RespostaChecklist(
-                checklist_name=respostas.get('checklist-name', ''),
-                pergunta=pergunta,
+        checklistId = respostas.get(f"checklist-id", "")
+        checklist = TemplateChecklist.query.get(checklistId)
+        auditoria_checklist = AuditoriaChecklist(
+            nome=checklist.nome,
+            data_auditoria=datetime.now(),
+            aderencia=None,
+            template_checklist_id=checklist.id,
+            auditor_id=1
+        )
+        db.session.add(auditoria_checklist)
+        db.session.commit()
+        perguntas = TemplatePergunta.query.all()
+        for pergunta in perguntas:
+            perguntaId = pergunta.id
+            resultado = respostas.get(f"resultado[{perguntaId}]", "") or None
+            responsavel = respostas.get(f"responsavel[{perguntaId}]", "")
+            classificacao_nc = respostas.get(f"classificacao-nc[{perguntaId}]", "")
+            acao_corretiva = respostas.get(f"acao-corretiva[{perguntaId}]", "")
+            observacoes = respostas.get(f"observacoes[{perguntaId}]", "")
+            resposta = AuditoriaPergunta(
                 resultado=resultado,
-                responsavel=responsavel,
-                classificacao_nc=classificacao_nc,
-                acao_corretiva=acao_corretiva,
                 observacoes=observacoes,
-                data=datetime.now()
+                auditoria_checklist_id=auditoria_checklist.id,
+                pergunta_id=perguntaId
             )
             db.session.add(resposta)
         db.session.commit()
@@ -210,7 +243,9 @@ def checklist():
 
         return redirect(url_for("checklist"))
     else:
-        return render_template('checklist.html', perguntas=perguntas)
+        perguntas = TemplatePergunta.query.all()
+        checklist = TemplateChecklist.query.filter_by(nome="Padrão").first()
+        return render_template('checklist.html', perguntas=perguntas, checklist=checklist)
 
 
 if __name__ == "__main__":

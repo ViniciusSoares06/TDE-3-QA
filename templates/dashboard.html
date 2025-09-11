@@ -23,5 +23,26 @@
   </style>
   <body>
     {% include 'components/header.html' %}
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>ID</th>
+            <th>Checklist</th>
+            <th>Pergunta</th>
+            <th>Resultado</th>
+            <th>Observações</th>
+            <th>Data</th>
+        </tr>
+
+        {% for r in respostas %}
+        <tr>
+            <td>{{ r.id }}</td>
+            <td>{{ r.auditoria_checklist.nome }}</td>
+            <td>{{ r.pergunta.descricao }}</td>
+            <td>{{ r.resultado }}</td>
+            <td>{{ r.observacoes }}</td>
+            <td>{{ r.auditoria_checklist.data }}</td>
+        </tr>
+        {% endfor %}
+    </table>
   </body>
 </html>

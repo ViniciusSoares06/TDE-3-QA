@@ -43,31 +43,13 @@
       background-color: #1b3a8a;
       transition: all 0.3s ease;
     }
-
-    .checklist-form__field {
-      margin-bottom: 16px;
-    }
-
-    .checklist-form__label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: bold;
-    }
-
-    .checklist-form__input {
-      width: 100%;
-      padding: 8px;
-      box-sizing: border-box;
-    }
   </style>
 </head>
 
 <body>
   <form action="#" method="post">
-    <div class="checklist-form__field">
-      <label class="checklist-form__label" for="checklist-name">Nome do Checklist</label>
-      <input class="checklist-form__input" id="checklist-name" type="text" name="checklist-name" required>
-    </div>
+    <h3>{{ checklist.nome }}</h3>
+    <input type="hidden" name="checklist-id" value="{{ checklist.id }}">
     <table>
       <thead>
         <tr>
@@ -85,29 +67,29 @@
         {% for pergunta in perguntas %}
         <tr>
           <td>{{ loop.index }}</td>
-          <td>{{ pergunta }}</td>
+          <td>{{ pergunta.descricao }}</td>
           <td>
-            <select name="resultado[{{ loop.index }}]">
+            <select name="resultado[{{ pergunta.id }}]">
               <option value="">Selecione</option>
               <option value="sim">Sim</option>
               <option value="nao">Não</option>
               <option value="na">N/A</option>
             </select>
           </td>
-          <td><input name="responsavel[{{ loop.index }}]" type="email" placeholder="Responsável"></td>
-          <td><textarea name="observacoes[{{ loop.index }}]" placeholder="Observações"></textarea></td>
+          <td><input name="responsavel[{{ pergunta.id }}]" type="email" placeholder="Responsável"></td>
+          <td><textarea name="observacoes[{{ pergunta.id }}]" placeholder="Observações"></textarea></td>
           <td>
-            <select name="classificacao-nc[{{ loop.index }}]">
+            <select name="classificacao-nc[{{ pergunta.id }}]">
               <option value="">Selecione</option>
               <option value="urgente">Urgente</option>
               <option value="media">Média</option>
               <option value="leve">Leve</option>
             </select>
           </td>
-          <td><textarea name="acao-corretiva[{{ loop.index }}]" type="text" placeholder="Ação corretiva"></textarea>
+          <td><textarea name="acao-corretiva[{{ pergunta.id }}]" type="text" placeholder="Ação corretiva"></textarea>
           </td>
           <td>
-            <select name="situacao-nc[{{ loop.index }}]">
+            <select name="situacao-nc[{{ pergunta.id }}]">
               <option value="">Selecione</option>
               <option value="aberto">Em aberto</option>
               <option value="andamento">Em andamento</option>
