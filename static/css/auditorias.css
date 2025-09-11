@@ -23,8 +23,8 @@
 /* Estilos gerais */
 body {
     font-family: sans-serif;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: #f4f7f9;
+    color: #333;
     line-height: 1.6;
     margin: 0;
     padding: 0;
@@ -33,7 +33,7 @@ body {
 .container {
     max-width: 900px;
     margin: 2rem auto;
-    padding: 0 var(--padding-md);
+    padding: 1rem;
 }
 
 /* Vistas (Telas) */
@@ -50,7 +50,7 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: var(--padding-lg);
+    margin-bottom: 1.5rem;
 }
 
 .header h2 {
@@ -63,7 +63,7 @@ body {
     background-color: var(--card-background);
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
-    padding: var(--padding-lg);
+    padding: 1.5rem;
     box-shadow: var(--box-shadow);
 }
 
@@ -108,8 +108,8 @@ body {
 /* Filtros */
 .filters {
     display: flex;
-    gap: var(--padding-md);
-    margin-bottom: var(--padding-lg);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .search-input,
@@ -121,37 +121,37 @@ body {
 }
 
 /* Lista de Auditorias */
-.audit-list {
+.auditoria-list {
     display: flex;
     flex-direction: column;
-    gap: var(--padding-md);
+    gap: 1rem;
 }
 
-.audit-item {
-    padding: var(--padding-md);
+.auditoria-item {
+    padding: 1rem;
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     transition: background-color 0.2s;
 }
 
-.audit-item:hover {
+.auditoria-item:hover {
     background-color: #f8f9fa;
 }
 
-.audit-header {
+.auditoria-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: var(--padding-md);
+    gap: 1rem;
 }
 
-.audit-info {
+.auditoria-info {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-.audit-badges {
+.auditoria-andamento {
     display: flex;
     align-items: center;
     gap: 0.75rem;
@@ -159,18 +159,18 @@ body {
 
 .audit-id {
     font-weight: bold;
-    color: var(--muted-text-color);
+    color: #6c757d;
 }
 
-.audit-details {
+.audit-detalhes {
     font-size: 0.9rem;
-    color: var(--muted-text-color);
+    color: #6c757d;
     display: flex;
-    gap: var(--padding-md);
+    gap: 1rem;
     flex-wrap: wrap;
 }
 
-.badge {
+.auditoria {
     padding: 0.25rem 0.75rem;
     border-radius: 999px;
     font-size: 0.75rem;
@@ -178,16 +178,16 @@ body {
     text-transform: uppercase;
 }
 
-.badge-success {
-    background-color: var(--success-color);
+.auditoria-concluida {
+    background-color: #28a745;
     color: #fff;
 }
 
 /* Formulário */
 .form-grid {
     display: grid;
-    gap: var(--padding-md);
-    margin-bottom: var(--padding-lg);
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
 .form-group {
@@ -210,13 +210,13 @@ body {
     display: flex;
     justify-content: flex-end;
     gap: var(--padding-md);
-    padding-top: var(--padding-lg);
+    padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
 }
 
 /* Checklist */
 .checklist-item {
-    margin-bottom: var(--padding-lg);
+    margin-bottom: 1.5rem;
 }
 
 .checklist-question {
@@ -226,7 +226,7 @@ body {
 
 .radio-group {
     display: flex;
-    gap: var(--padding-lg);
+    gap: 1.5rem;
 }
 
 .radio-option {
