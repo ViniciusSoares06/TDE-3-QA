@@ -219,7 +219,7 @@ def checklist():
         nao_conformes = {
             i: item
             for i, item in dados.items()
-            if item.get("resultado", "").lower() == "nao"
+            if item.get("resultado", "") == "NAO_CONFORME"
         }
 
         for i, nc in nao_conformes.items():
