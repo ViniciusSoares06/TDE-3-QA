@@ -26,6 +26,17 @@
 
     {% include 'components/header.html' %}
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <script>
+            {% for category, message in messages %}
+                alert("{{ message }}");
+            {% endfor %}
+            </script>
+        {% endif %}
+    {% endwith %}
+
+
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -101,6 +112,11 @@
                         <option value="Em Andamento" {% if ncInfo and ncInfo.situacao == "em_andamento" %}selected{% endif %}>Em Andamento</option>
                         <option value="Resolvida" {% if ncInfo and ncInfo.situacao == "encerrada" %}selected{% endif %}>Resolvida</option>
                     </select>
+
+                    <!-- Botão de envio manual de email -->
+                    <form action="{{ url_for('enviar_email_nc_manual', nc_id=ncInfo.id) }}" method="post" style="display:inline;">
+                        <button type="submit" class="btn btn-success">Enviar Email</button>
+                    </form>
                 </div>
             </div>
         {% else %}

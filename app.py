@@ -15,10 +15,12 @@ from models.AuditoriaPergunta import AuditoriaPergunta
 from models.AuditoriaChecklist import AuditoriaChecklist
 from models.Usuario import Usuario
 from models.NaoConformidade import NaoConformidade, SituacaoEnum, ClassificacaoEnum
+from flask import flash
 
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+app.config['SECRET_KEY'] = '123'
 db.init_app(app)
 
 
@@ -185,6 +187,31 @@ def NCs():
 
     return render_template('NCs.html', NCs=NCs, nc_dict=nc_dict)
 
+@app.route('/enviar_email_nc/<int:nc_id>', methods=['POST'])
+def enviar_email_nc_manual(nc_id):
+    nc = NaoConformidade.query.get_or_404(nc_id)
+
+    if not nc.responsavel:
+        flash("Erro: Não há responsável definido para esta NC.", "error")
+        return redirect(url_for('NCs'))
+
+    arquivo_pdf = gerar_pdf_nc(nc, nc.id)
+    email_responsavel = nc.responsavel.email
+    nome_responsavel = nc.responsavel.nome
+
+    try:
+        enviar_email_nc(
+            destinatario=email_responsavel,
+            assunto=f"Não Conformidade NC-{nc.id:03d}",
+            corpo=f"Olá {nome_responsavel},\n\nSegue anexo o relatório da NC-{nc.id:03d}.",
+            arquivo_pdf=arquivo_pdf
+        )
+        flash(f"Email enviado com sucesso para {nome_responsavel}!", "success")
+    except Exception as e:
+        flash(f"Erro ao enviar email: {e}", "error")
+
+    return redirect(url_for('NCs'))
+
 
 
 @app.route('/checklist', methods=['GET', 'POST'])
@@ -239,14 +266,6 @@ def checklist():
 
                 db.session.add(nc)
                 db.session.commit()
-
-                arquivo_pdf = gerar_pdf_nc(nc, nc.id)
-                enviar_email_nc(
-                    responsavel.email,
-                    assunto=f"Não Conformidade NC-{nc.id:03d}",
-                    corpo=f"Segue anexo o relatório da NC-{nc.id:03d}.",
-                    arquivo_pdf=arquivo_pdf
-                )
 
         return redirect(url_for("checklist"))
 
