@@ -18,6 +18,7 @@ class NaoConformidade(db.Model):
         nullable=False
     )
     escalonamento = db.Column(db.Integer, default=0, nullable=True)
+    data_limite = db.Column(db.Date, nullable=True)
 
     responsavel_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=True)
     auditoria_pergunta_id = db.Column(db.Integer, db.ForeignKey('auditoria_pergunta.id'), nullable=True)

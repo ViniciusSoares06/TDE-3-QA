@@ -68,8 +68,8 @@ def adicionar_dias_uteis(data_inicio, dias):
     return data_atual
 
 
-def gerar_pdf_nc(nc, indice):
-    arquivo = f"NC_{indice}.pdf"
+def gerar_pdf_nc(nc):
+    arquivo = f"NC_{nc.id}.pdf"
     c = canvas.Canvas(arquivo, pagesize=A4)
     largura, altura = A4
 
@@ -78,8 +78,8 @@ def gerar_pdf_nc(nc, indice):
     
     # Acessando atributos do objeto NaoConformidade
     classificacao = nc.classificacao if nc.classificacao else "leve"
-    dias_prazo = {"urgente": 1, "media": 2, "leve": 3}.get(classificacao, 3)
-    prazo_resolucao = adicionar_dias_uteis(data_solicitacao, dias_prazo)
+    # dias_prazo = {"urgente": 1, "media": 2, "leve": 3}.get(classificacao, 3)
+    # prazo_resolucao = adicionar_dias_uteis(data_solicitacao, dias_prazo)
     
     responsavel_nome = nc.responsavel.nome if nc.responsavel else ""
     acao_corretiva = nc.acao_corretiva or ""
@@ -91,13 +91,13 @@ def gerar_pdf_nc(nc, indice):
     c.drawString(100, altura - 50, "Solicitação de Resolução de Não Conformidade")
 
     c.setFont("Helvetica", 10)
-    c.drawString(50, altura - 100, f"Código de Controle: NC-{indice:03d}")
+    c.drawString(50, altura - 100, f"Código de Controle: NC-{nc.id:03d}")
     c.drawString(300, altura - 100, f"Projeto: Exemplo")
     c.drawString(50, altura - 120, f"Responsável: {responsavel_nome}")
 
     # Datas e prazos
     c.drawString(50, altura - 160, f"Data da 1ª Solicitação: {data_solicitacao.strftime('%d/%m/%Y')}")
-    c.drawString(300, altura - 160, f"Prazo de Resolução: {prazo_resolucao.strftime('%d/%m/%Y')}")
+    c.drawString(300, altura - 160, f"Prazo de Resolução: {nc.data_limite.strftime('%d/%m/%Y')}")
     c.drawString(50, altura - 180, "Data da Solução: _______")
     c.drawString(300, altura - 180, "Nº de Escalonamentos: 1")
     c.drawString(50, altura - 200, "RQA Responsável: _______")
@@ -113,9 +113,9 @@ def gerar_pdf_nc(nc, indice):
     c.drawString(50, altura - 320, f"Situação: {situacao}")
 
     # Escalonamento
-    c.drawString(50, altura - 360, "Histórico de Escalonamento: 1")
+    c.drawString(50, altura - 360, f"Histórico de Escalonamento: {nc.escalonamento}")
     c.drawString(300, altura - 360, "Superior Responsável: Kelly")
-    c.drawString(50, altura - 380, f"Prazo para Resolução: {prazo_resolucao.strftime('%d/%m/%Y')}")
+    c.drawString(50, altura - 380, f"Prazo para Resolução: {nc.data_limite.strftime('%d/%m/%Y')}")
 
     # Rodapé
     c.setFont("Helvetica-Oblique", 8)
@@ -223,11 +223,16 @@ def atualizar_status_nc(nc_id):
 def enviar_email_nc_manual(nc_id):
     nc = NaoConformidade.query.get_or_404(nc_id)
 
+    if not nc.data_limite:
+        dias_prazo = {"urgente": 1, "media": 2, "leve": 3}.get(nc.classificacao, 3)
+        nc.data_limite = adicionar_dias_uteis(datetime.now().date(), dias_prazo)
+        db.session.commit()
+
     if not nc.responsavel:
         flash("Erro: Não há responsável definido para esta NC.", "error")
         return redirect(url_for('NCs'))
 
-    arquivo_pdf = gerar_pdf_nc(nc, nc.id)
+    arquivo_pdf = gerar_pdf_nc(nc)
     email_responsavel = nc.responsavel.email
     nome_responsavel = nc.responsavel.nome
 
@@ -242,6 +247,16 @@ def enviar_email_nc_manual(nc_id):
     except Exception as e:
         flash(f"Erro ao enviar email: {e}", "error")
 
+    return redirect(url_for('NCs'))
+
+@app.route('/nc/<int:nc_id>/escalonar', methods=['POST'])
+def escalonar_nc(nc_id):
+    nc = NaoConformidade.query.get_or_404(nc_id)
+    nc.escalonamento = (nc.escalonamento or 0) + 1
+    dias_prazo = {"urgente": 1, "media": 2, "leve": 3}.get(nc.classificacao, 3)
+    nc.data_limite = adicionar_dias_uteis(datetime.now().date(), dias_prazo)
+    db.session.commit()
+    flash(f"Escalonamento adicionado para NC-{nc.id:03d}.", "success")
     return redirect(url_for('NCs'))
 
 
