@@ -10,16 +10,13 @@
         width: 100%;
       }
 
-      th,
-      td {
+      th, td {
         border: 1px solid black;
         padding: 6px;
         text-align: left;
       }
 
-      select,
-      input,
-      textarea {
+      select, input, textarea {
         width: 100%;
         box-sizing: border-box;
       }
@@ -68,7 +65,7 @@
             <td>{{ loop.index }}</td>
             <td>{{ pergunta.descricao }}</td>
             <td>
-              <select name="resultado[{{ pergunta.id }}]">
+              <select name="resultado[{{ pergunta.id }}]" required>
                 <option value="">Selecione</option>
                 <option value="CONFORME">Sim</option>
                 <option value="NAO_CONFORME">Não</option>
@@ -80,16 +77,18 @@
                 name="responsavel[{{ pergunta.id }}]"
                 type="email"
                 placeholder="Responsável"
+                required
               />
             </td>
             <td>
               <textarea
                 name="observacoes[{{ pergunta.id }}]"
                 placeholder="Observações"
+                required
               ></textarea>
             </td>
             <td>
-              <select name="classificacao-nc[{{ pergunta.id }}]">
+              <select name="classificacao-nc[{{ pergunta.id }}]" required>
                 <option value="">Selecione</option>
                 <option value="urgente">Urgente</option>
                 <option value="media">Média</option>
@@ -99,12 +98,12 @@
             <td>
               <textarea
                 name="acao-corretiva[{{ pergunta.id }}]"
-                type="text"
                 placeholder="Ação corretiva"
+                required
               ></textarea>
             </td>
             <td>
-              <select name="situacao-nc[{{ pergunta.id }}]">
+              <select name="situacao-nc[{{ pergunta.id }}]" required>
                 <option value="">Selecione</option>
                 <option value="em_aberto">Em aberto</option>
                 <option value="em_andamento">Em andamento</option>
