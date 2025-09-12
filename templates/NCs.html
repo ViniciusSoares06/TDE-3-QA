@@ -107,17 +107,19 @@
                 </div>
 
                 <div class="nc-actions">
-                    <select class="status-select">
-                        <option value="Aberta" {% if ncInfo and ncInfo.situacao == "em_aberto" %}selected{% endif %}>Aberta</option>
-                        <option value="Em Andamento" {% if ncInfo and ncInfo.situacao == "em_andamento" %}selected{% endif %}>Em Andamento</option>
-                        <option value="Resolvida" {% if ncInfo and ncInfo.situacao == "encerrada" %}selected{% endif %}>Resolvida</option>
+                <form action="{{ url_for('atualizar_status_nc', nc_id=ncInfo.id) }}" method="post">
+                    <select name="status" class="status-select" onchange="this.form.submit()">
+                    <option value="Aberta" {% if ncInfo and ncInfo.situacao == "em_aberto" %}selected{% endif %}>Aberta</option>
+                    <option value="Em Andamento" {% if ncInfo and ncInfo.situacao == "em_andamento" %}selected{% endif %}>Em Andamento</option>
+                    <option value="Resolvida" {% if ncInfo and ncInfo.situacao == "encerrada" %}selected{% endif %}>Resolvida</option>
                     </select>
+                </form>
 
-                    <!-- Botão de envio manual de email -->
-                    <form action="{{ url_for('enviar_email_nc_manual', nc_id=ncInfo.id) }}" method="post" style="display:inline;">
-                        <button type="submit" class="btn btn-success">Enviar Email</button>
-                    </form>
+                <form action="{{ url_for('enviar_email_nc_manual', nc_id=ncInfo.id) }}" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-success">Enviar Email</button>
+                </form>
                 </div>
+
             </div>
         {% else %}
             <p>Nenhuma não conformidade encontrada.</p>

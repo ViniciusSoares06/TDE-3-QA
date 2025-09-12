@@ -187,13 +187,38 @@ def dashboard():
 
 @app.route('/NCs')
 def NCs():
-    NCsInfos = NaoConformidade.query.all()
+    NCsInfos = NaoConformidade.query.filter(NaoConformidade.situacao != "encerrada").all()
     
     nc_dict = {nc.auditoria_pergunta_id: nc for nc in NCsInfos}
 
-    NCs = AuditoriaPergunta.query.filter_by(resultado="NAO_CONFORME").all()
+    NCs = AuditoriaPergunta.query.filter(
+        AuditoriaPergunta.id.in_([nc.auditoria_pergunta_id for nc in NCsInfos])
+    ).all()
 
     return render_template('NCs.html', NCs=NCs, nc_dict=nc_dict)
+
+
+@app.route("/nc/<int:nc_id>/atualizar_status", methods=["POST"])
+def atualizar_status_nc(nc_id):
+    novo_status = request.form.get("status")
+
+    mapeamento = {
+        "Aberta": "em_aberto",
+        "Em Andamento": "em_andamento",
+        "Resolvida": "encerrada"
+    }
+
+    nc = NaoConformidade.query.get(nc_id)
+    if nc and novo_status in mapeamento:
+        nc.situacao = mapeamento[novo_status]
+        db.session.commit()
+        flash("Status atualizado com sucesso!", "success")
+    else:
+        flash("Erro ao atualizar status.", "error")
+
+    return redirect(url_for("NCs"))
+
+
 
 @app.route('/enviar_email_nc/<int:nc_id>', methods=['POST'])
 def enviar_email_nc_manual(nc_id):
