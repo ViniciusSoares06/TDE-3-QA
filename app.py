@@ -187,7 +187,7 @@ def dashboard():
 
 @app.route('/NCs')
 def NCs():
-    NCsInfos = NaoConformidade.query.filter(NaoConformidade.situacao != "encerrada").all()
+    NCsInfos = NaoConformidade.query.all()
     
     nc_dict = {nc.auditoria_pergunta_id: nc for nc in NCsInfos}
 
@@ -212,7 +212,6 @@ def atualizar_status_nc(nc_id):
     if nc and novo_status in mapeamento:
         nc.situacao = mapeamento[novo_status]
         db.session.commit()
-        flash("Status atualizado com sucesso!", "success")
     else:
         flash("Erro ao atualizar status.", "error")
 
