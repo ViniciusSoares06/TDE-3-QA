@@ -87,6 +87,7 @@
               <div class="detalhes-auditoria">
                 <p><strong>Checklist:</strong> {{ checklist.nome }}</p>
                 <p><strong>Data:</strong> {{ checklist.data_auditoria.strftime('%d/%m/%Y') }}</p>
+                <p><strong>Aderência:</strong> {{ (checklist.aderencia * 100)|round(2) }}%</p>
               </div>
             </div>
             <div class="acoes-auditoria">

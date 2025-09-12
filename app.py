@@ -165,6 +165,7 @@ def home():
 
 @app.route('/auditorias')
 def auditorias():
+    inicializar_perguntas()
     auditorias = AuditoriaChecklist.query.order_by(AuditoriaChecklist.data_auditoria.desc()).all()
     return render_template('auditorias.html', auditorias=auditorias)
 
@@ -281,7 +282,7 @@ def checklist():
                 auditoria_checklist_id=auditoria_checklist.id,
                 resultado="CONFORME"
             ).count()
-            auditoria_checklist.aderencia = conformes / (len(perguntas) - naoAplicaveis)
+            auditoria_checklist.aderencia = conformes / (len(perguntas) - naoAplicaveis) if conformes > 0 else 0
             db.session.commit()
 
         return redirect(url_for("checklist"))
