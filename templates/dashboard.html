@@ -31,6 +31,7 @@
             <th>Resultado</th>
             <th>Observações</th>
             <th>Data</th>
+            <th>Aderência</th>
         </tr>
 
         {% for r in respostas %}
@@ -40,7 +41,8 @@
             <td>{{ r.pergunta.descricao }}</td>
             <td>{{ r.resultado }}</td>
             <td>{{ r.observacoes }}</td>
-            <td>{{ r.auditoria_checklist.data }}</td>
+            <td>{{ r.auditoria_checklist.data_auditoria }}</td>
+            <td>{{ r.auditoria_checklist.aderencia }}</td>
         </tr>
         {% endfor %}
     </table>

@@ -266,6 +266,16 @@ def checklist():
 
                 db.session.add(nc)
                 db.session.commit()
+            naoAplicaveis = AuditoriaPergunta.query.filter_by(
+                auditoria_checklist_id=auditoria_checklist.id,
+                resultado="NAO_APLICAVEL"
+            ).count()
+            conformes = AuditoriaPergunta.query.filter_by(
+                auditoria_checklist_id=auditoria_checklist.id,
+                resultado="CONFORME"
+            ).count()
+            auditoria_checklist.aderencia = conformes / (len(perguntas) - naoAplicaveis)
+            db.session.commit()
 
         return redirect(url_for("checklist"))
 
