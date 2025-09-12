@@ -228,6 +228,7 @@ def checklist():
         respostas = request.form
         checklistId = respostas.get("checklist-id")
         checklist = TemplateChecklist.query.get(checklistId)
+
         auditoria_checklist = AuditoriaChecklist(
             nome=checklist.nome,
             data_auditoria=datetime.now(),
@@ -238,15 +239,25 @@ def checklist():
         db.session.commit()
 
         perguntas = TemplatePergunta.query.all()
+
         for pergunta in perguntas:
             perguntaId = pergunta.id
             resultado = respostas.get(f"resultado[{perguntaId}]") or "NAO_APLICAVEL"
             responsavel_email = respostas.get(f"responsavel[{perguntaId}]")
-            classificacao_nc = respostas.get(f"classificacao-nc[{perguntaId}]") or "leve"
+            classificacao_nc = respostas.get(f"classificacao-nc[{perguntaId}]")
             acao_corretiva = respostas.get(f"acao-corretiva[{perguntaId}]")
-            situacao_nc = respostas.get(f"situacao-nc[{perguntaId}]") or "em_aberto"
+            situacao_nc = respostas.get(f"situacao-nc[{perguntaId}]")
             observacoes = respostas.get(f"observacoes[{perguntaId}]")
 
+            if resultado == "NAO_CONFORME":
+                if not (responsavel_email and classificacao_nc and acao_corretiva and situacao_nc and observacoes):
+                    db.session.rollback()
+                    return """
+                        <script>
+                            alert("Preencha todos os campos da Não Conformidade antes de salvar!");
+                            history.go(-1);
+                        </script>
+                    """
 
             auditoria_resposta = AuditoriaPergunta(
                 resultado=resultado,
@@ -274,16 +285,17 @@ def checklist():
 
                 db.session.add(nc)
                 db.session.commit()
-            naoAplicaveis = AuditoriaPergunta.query.filter_by(
-                auditoria_checklist_id=auditoria_checklist.id,
-                resultado="NAO_APLICAVEL"
-            ).count()
-            conformes = AuditoriaPergunta.query.filter_by(
-                auditoria_checklist_id=auditoria_checklist.id,
-                resultado="CONFORME"
-            ).count()
-            auditoria_checklist.aderencia = conformes / (len(perguntas) - naoAplicaveis) if conformes > 0 else 0
-            db.session.commit()
+
+        naoAplicaveis = AuditoriaPergunta.query.filter_by(
+            auditoria_checklist_id=auditoria_checklist.id,
+            resultado="NAO_APLICAVEL"
+        ).count()
+        conformes = AuditoriaPergunta.query.filter_by(
+            auditoria_checklist_id=auditoria_checklist.id,
+            resultado="CONFORME"
+        ).count()
+        auditoria_checklist.aderencia = conformes / (len(perguntas) - naoAplicaveis) if (len(perguntas) - naoAplicaveis) > 0 else 0
+        db.session.commit()
 
         return redirect(url_for("checklist"))
 
@@ -291,6 +303,7 @@ def checklist():
         perguntas = TemplatePergunta.query.all()
         checklist = TemplateChecklist.query.filter_by(nome="Padrão").first()
         return render_template('checklist.html', perguntas=perguntas, checklist=checklist)
+
 
 
 if __name__ == "__main__":
