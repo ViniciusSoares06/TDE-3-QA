@@ -232,7 +232,7 @@ def checklist():
         perguntas = TemplatePergunta.query.all()
         for pergunta in perguntas:
             perguntaId = pergunta.id
-            resultado = respostas.get(f"resultado[{perguntaId}]")
+            resultado = respostas.get(f"resultado[{perguntaId}]") or "NAO_APLICAVEL"
             responsavel_email = respostas.get(f"responsavel[{perguntaId}]")
             classificacao_nc = respostas.get(f"classificacao-nc[{perguntaId}]") or "leve"
             acao_corretiva = respostas.get(f"acao-corretiva[{perguntaId}]")
