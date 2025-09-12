@@ -5,117 +5,165 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Checklist</title>
     <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f7f8fa;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .cartao {
+        background-color: #fff;
+        padding: 20px;
+        margin: 10px 0;
+        border-radius: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+
+      h3 {
+        margin-bottom: 20px;
+        color: #2657ca;
+      }
+
       table {
         border-collapse: collapse;
         width: 100%;
+        margin-bottom: 16px;
       }
 
-      th,
-      td {
-        border: 1px solid black;
-        padding: 6px;
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
         text-align: left;
+        vertical-align: top;
       }
 
-      select,
-      input,
-      textarea {
+      th {
+        background-color: #f2f2f2;
+      }
+
+      select, input, textarea {
         width: 100%;
         box-sizing: border-box;
+        padding: 6px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+        font-size: 14px;
       }
 
       textarea {
         resize: vertical;
+        min-height: 50px;
       }
 
-      button {
-        margin-top: 16px;
+      .botao {
         padding: 8px 16px;
-        background-color: #2657caff;
-        border-radius: 4px;
-        color: white;
-        border: none;
+        margin-top: 12px;
         cursor: pointer;
+        border-radius: 4px;
+        font-size: 14px;
       }
 
-      button:hover {
+      .botao-primario {
+        background-color: #2657ca;
+        color: #fff;
+        border: none;
+      }
+
+      .botao-primario:hover {
         background-color: #1b3a8a;
+        transition: all 0.3s ease;
+      }
+
+      .botao-contorno {
+        background-color: transparent;
+        border: 1px solid #2657ca;
+        color: #2657ca;
+      }
+
+      .botao-contorno:hover {
+        background-color: #2657ca;
+        color: #fff;
         transition: all 0.3s ease;
       }
     </style>
   </head>
 
   <body>
-    <form action="#" method="post">
-      <h3>{{ checklist.nome }}</h3>
-      <input type="hidden" name="checklist-id" value="{{ checklist.id }}" />
-      <table>
-        <thead>
-          <tr>
-            <th>Nº</th>
-            <th>Descrição</th>
-            <th>Resultado</th>
-            <th>Responsável</th>
-            <th>Observações</th>
-            <th>Classificação da NCF</th>
-            <th>Ação corretiva indicada</th>
-            <th>Situação da NC</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for pergunta in perguntas %}
-          <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ pergunta.descricao }}</td>
-            <td>
-              <select name="resultado[{{ pergunta.id }}]">
-                <option value="">Selecione</option>
-                <option value="CONFORME">Sim</option>
-                <option value="NAO_CONFORME">Não</option>
-                <option value="NAO_APLICAVEL">N/A</option>
-              </select>
-            </td>
-            <td>
-              <input
-                name="responsavel[{{ pergunta.id }}]"
-                type="email"
-                placeholder="Responsável"
-              />
-            </td>
-            <td>
-              <textarea
-                name="observacoes[{{ pergunta.id }}]"
-                placeholder="Observações"
-              ></textarea>
-            </td>
-            <td>
-              <select name="classificacao-nc[{{ pergunta.id }}]">
-                <option value="">Selecione</option>
-                <option value="urgente">Urgente</option>
-                <option value="media">Média</option>
-                <option value="leve">Leve</option>
-              </select>
-            </td>
-            <td>
-              <textarea
-                name="acao-corretiva[{{ pergunta.id }}]"
-                type="text"
-                placeholder="Ação corretiva"
-              ></textarea>
-            </td>
-            <td>
-              <select name="situacao-nc[{{ pergunta.id }}]">
-                <option value="">Selecione</option>
-                <option value="em_aberto">Em aberto</option>
-                <option value="em_andamento">Em andamento</option>
-                <option value="encerrada">Encerrada</option>
-              </select>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      <button type="submit">Enviar</button>
-    </form>
+    <div class="cartao">
+      <form action="#" method="post">
+        <h3>{{ checklist.nome }}</h3>
+        <input type="hidden" name="checklist-id" value="{{ checklist.id }}" />
+
+        <table>
+          <thead>
+            <tr>
+              <th>Nº</th>
+              <th>Descrição</th>
+              <th>Resultado</th>
+              <th>Responsável</th>
+              <th>Observações</th>
+              <th>Classificação da NCF</th>
+              <th>Ação corretiva indicada</th>
+              <th>Situação da NC</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for pergunta in perguntas %}
+            <tr>
+              <td>{{ loop.index }}</td>
+              <td>{{ pergunta.descricao }}</td>
+              <td>
+                <select name="resultado[{{ pergunta.id }}]">
+                  <option value="">Selecione</option>
+                  <option value="CONFORME">Sim</option>
+                  <option value="NAO_CONFORME">Não</option>
+                  <option value="NAO_APLICAVEL">N/A</option>
+                </select>
+              </td>
+              <td>
+                <input
+                  name="responsavel[{{ pergunta.id }}]"
+                  type="email"
+                  placeholder="Responsável"
+                />
+              </td>
+              <td>
+                <textarea
+                  name="observacoes[{{ pergunta.id }}]"
+                  placeholder="Observações"
+                ></textarea>
+              </td>
+              <td>
+                <select name="classificacao-nc[{{ pergunta.id }}]">
+                  <option value="">Selecione</option>
+                  <option value="urgente">Urgente</option>
+                  <option value="media">Média</option>
+                  <option value="leve">Leve</option>
+                </select>
+              </td>
+              <td>
+                <textarea
+                  name="acao-corretiva[{{ pergunta.id }}]"
+                  placeholder="Ação corretiva"
+                ></textarea>
+              </td>
+              <td>
+                <select name="situacao-nc[{{ pergunta.id }}]">
+                  <option value="">Selecione</option>
+                  <option value="em_aberto">Em aberto</option>
+                  <option value="em_andamento">Em andamento</option>
+                  <option value="encerrada">Encerrada</option>
+                </select>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <button type="submit" class="botao botao-primario">Enviar</button>
+        <button type="reset" class="botao botao-contorno">Limpar</button>
+      </form>
+    </div>
   </body>
 </html>
