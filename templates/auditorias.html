@@ -5,6 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gerenciador de Auditorias</title>
     <link rel="stylesheet" href="../static/css/auditorias.css" />
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .status-concluida {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: green;
+        margin-right: 5px;
+      }
+      .botao {
+        padding: 6px 12px;
+        margin: 2px;
+        cursor: pointer;
+      }
+      .botao-primario {
+        background-color: #2657ca;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+      }
+      .botao-contorno {
+        background-color: transparent;
+        border: 1px solid #2657ca;
+        color: #2657ca;
+        border-radius: 4px;
+      }
+      .cartao {
+        background-color: #fff;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      .cabecalho {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .tela {
+        display: none;
+      }
+      .tela.ativa {
+        display: block;
+      }
+    </style>
   </head>
   <body>
     {% include 'components/header.html' %}
@@ -18,40 +76,28 @@
           </button>
         </div>
 
+        {% for checklist in auditorias %}
         <div class="cartao">
-          
-          <div class="lista-itens">
-            <div class="item-auditoria">
-              <div class="cabecalho-auditoria">
-                <div class="informacoes-auditoria">
-                  <div class="status-auditoria">
-                    <span class="status status-concluida"></span>
-                    <span class="id-auditoria">#12345</span>
-                  </div>
-                  <div class="detalhes-auditoria">
-                    <tr>
-                        <th>ID</th>
-                        <th>Data</th>                
-                    </tr>
-
-                    {% for r in respostas %}
-                    
-                    <tr>
-                        <td>{{ r.id }}</td>
-                        <td>{{ r.auditoria_checklist.data }}</td>
-                    </tr>
-                    {% endfor %}
-                  </div>
-                </div>
-                <div class="acoes-auditoria">
-                  <a href="#" class="botao botao-contorno" onclick="mostrarTela('checklist-auditoria')">
-                    Ver Detalhes
-                  </a>
-                </div>
+          <div class="cabecalho-auditoria">
+            <div class="informacoes-auditoria">
+              <div class="status-auditoria">
+                <span class="status status-concluida"></span>
+                <span class="id-auditoria">#{{ checklist.id }}</span>
               </div>
+              <div class="detalhes-auditoria">
+                <p><strong>Checklist:</strong> {{ checklist.nome }}</p>
+                <p><strong>Data:</strong> {{ checklist.data_auditoria.strftime('%d/%m/%Y') }}</p>
+              </div>
+            </div>
+            <div class="acoes-auditoria">
+              <a href="{{ url_for('detalhes_auditoria', checklist_id=checklist.id) }}" 
+                 class="botao botao-contorno">
+                 Ver Detalhes
+              </a>
             </div>
           </div>
         </div>
+        {% endfor %}
       </div>
 
       <div id="formulario-auditoria" class="tela">
@@ -69,70 +115,6 @@
             </iframe>
           </div>
         </div>
-      </div>
-    
-        <div id="detalhes-auditoria" class="tela">
-            <div class="cabecalho">
-            <h2>Detalhes da Auditoria</h2>
-            <button class="botao botao-contorno" onclick="mostrarTela('lista-auditorias')">Voltar</button>
-            </div>
-            <div class="cartao">
-            <div class="tabela-detalhes">
-                <table class="tabela">
-                <thead>
-                    <tr>
-                    <th>ID</th>
-                    <th>Checklist</th>
-                    <th>Pergunta</th>
-                    <th>Resultado</th>
-                    <th>Observações</th>
-                    <th>Data</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for r in respostas %}
-                    <tr>
-                    <td>{{ r.id }}</td>
-                    <td>{{ r.auditoria_checklist.nome }}</td>
-                    <td>{{ r.pergunta.descricao }}</td>
-                    <td>{{ r.resultado }}</td>
-                    <td>{{ r.observacoes }}</td>
-                    <td>{{ r.auditoria_checklist.data }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                </table>
-            </div>
-            </div>
-        </div>
-
-      <div id="checklist-auditoria" class="tela">
-        <div class="cabecalho">
-          <h2>Checklist de Auditoria</h2>
-          <button class="botao botao-contorno" onclick="mostrarTela('lista-auditorias')">Voltar</button>
-        </div>
-        <div class="cartao">
-          <table border="1" cellpadding="5">
-        <tr>
-            <th>ID</th>
-            <th>Checklist</th>
-            <th>Pergunta</th>
-            <th>Resultado</th>
-            <th>Observações</th>
-            <th>Data</th>
-        </tr>
-
-        {% for r in respostas %}
-        <tr>
-            <td>{{ r.id }}</td>
-            <td>{{ r.auditoria_checklist.nome }}</td>
-            <td>{{ r.pergunta.descricao }}</td>
-            <td>{{ r.resultado }}</td>
-            <td>{{ r.observacoes }}</td>
-            <td>{{ r.auditoria_checklist.data }}</td>
-        </tr>
-        {% endfor %}
-    </table>
       </div>
     </div>
 

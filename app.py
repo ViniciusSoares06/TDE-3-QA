@@ -165,8 +165,15 @@ def home():
 
 @app.route('/auditorias')
 def auditorias():
-    inicializar_perguntas()
-    return render_template('auditorias.html')
+    auditorias = AuditoriaChecklist.query.order_by(AuditoriaChecklist.data_auditoria.desc()).all()
+    return render_template('auditorias.html', auditorias=auditorias)
+
+
+@app.route('/auditoria/<int:checklist_id>')
+def detalhes_auditoria(checklist_id):
+    checklist = AuditoriaChecklist.query.get_or_404(checklist_id)
+    respostas = checklist.perguntas
+    return render_template('checklist_detalhes.html', checklist=checklist, respostas=respostas)
 
 
 @app.route('/dashboard')

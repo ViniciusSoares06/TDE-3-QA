@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Detalhes da Auditoria</title>
+    <link rel="stylesheet" href="../static/css/auditorias.css" />
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+      }
+      .botao {
+        padding: 6px 12px;
+        margin: 2px;
+        cursor: pointer;
+      }
+      .botao-primario {
+        background-color: #2657ca;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+      }
+      .botao-contorno {
+        background-color: transparent;
+        border: 1px solid #2657ca;
+        color: #2657ca;
+        border-radius: 4px;
+      }
+      .cartao {
+        background-color: #fff;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 6px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      }
+      .cabecalho {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      h2 {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    {% include 'components/header.html' %}
+
+    <div class="recipiente">
+      <div class="cabecalho">
+        <h2>Detalhes da Auditoria - {{ checklist.nome }}</h2>
+        <button class="botao botao-contorno" onclick="window.history.back()">Voltar</button>
+      </div>
+
+      <div class="cartao">
+        <p><strong>ID da Auditoria:</strong> {{ checklist.id }}</p>
+        <p><strong>Data:</strong> {{ checklist.data_auditoria.strftime('%d/%m/%Y') }}</p>
+
+        {% set resultado_map = {
+          "CONFORME": "Conforme",
+          "NAO_CONFORME": "Não Conforme",
+          "NAO_APLICAVEL": "Não Aplicável"
+        } %}
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID Pergunta</th>
+              <th>Descrição</th>
+              <th>Resultado</th>
+              <th>Observações</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in respostas %}
+            <tr>
+              <td>{{ r.pergunta.id }}</td>
+              <td>{{ r.pergunta.descricao }}</td>
+              <td>{{ resultado_map.get(r.resultado, "Não Conforme") }}</td>
+              <td>{{ r.observacoes or "-" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
